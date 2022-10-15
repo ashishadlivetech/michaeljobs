@@ -1,6 +1,7 @@
 <?php 
-
-if($_POST['id']){
+$post = '635525';
+if($post){
+  
 header("Access-Control-Allow-Origin: *");
         header('Access-Control-Allow-Credentials: true');
 
@@ -32,7 +33,7 @@ $api = $auth_val['api'];
 
 $curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => $api."jobs/".$_POST['id'],
+  CURLOPT_URL => $api."jobs/".$post,
   CURLOPT_RETURNTRANSFER => true,  
   CURLOPT_TIMEOUT => 30,
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -47,8 +48,33 @@ $response = curl_exec($curl);
 
 $err = curl_error($curl);
 curl_close($curl);
+// $result->jobDetail = $response;
+$jobDetail = json_decode($response, true);
+
+$social = $jobDetail['company']['links']['self'];
+$curl = curl_init();
+curl_setopt_array($curl, array(
+  CURLOPT_URL => $social,
+  CURLOPT_RETURNTRANSFER => true,  
+  CURLOPT_TIMEOUT => 30,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "GET",
+  CURLOPT_HTTPHEADER => array(
+    "Authorization: Bearer ". $new_token,
+    "cache-control: no-cache"
+  ),
+));
+
+$res = curl_exec($curl);
+
+$err = curl_error($curl);
+curl_close($curl);
+
 http_response_code(200);
-echo $result = $response;
+// $result->social = $res;
+$obj_merged = (object) array_merge(
+        (array) json_decode($response), (array) json_decode($res));
+echo json_encode($obj_merged,true);
 }else{
     http_response_code(201);
     echo json_encode(array('error'=>'Please provide Job id '));
