@@ -1,6 +1,6 @@
 <?php
 
-if($post){
+if($_POST['id']){
   
 header("Access-Control-Allow-Origin: *");
         header('Access-Control-Allow-Credentials: true');
