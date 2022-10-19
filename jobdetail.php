@@ -1,4 +1,5 @@
 <?php
+
 if($post){
   
 header("Access-Control-Allow-Origin: *");
